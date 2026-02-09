@@ -81,6 +81,14 @@
       letter-spacing: -0.5px;
     }
 
+    .hero-img{
+      width:min(320px, 85%);
+      border-radius: 16px;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+      margin: 10px auto 14px;
+      display:block;
+    }
+
     p{
       margin:0 0 18px;
       font-size: clamp(16px, 2.3vw, 18px);
@@ -180,6 +188,7 @@
 
   <div class="card">
     <h1>Ievutė, will you be my Valentine? 💘</h1>
+    <img class="hero-img" src="IMG_3349.jpeg" alt="Our photo 💕">
     <p>Choose wisely… the universe is watching 👀</p>
 
     <div class="btnRow" id="btnArea">
@@ -200,7 +209,7 @@
 
   <script>
     // ===== 1) Put your GIF URL here =====
-    const CUTE_GIF_URL = "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif";
+    const CUTE_GIF_URL = "IMG_1933.jpeg";
     document.getElementById("cuteImg").src = CUTE_GIF_URL;
 
     // ===== 2) Floating hearts in the background =====
