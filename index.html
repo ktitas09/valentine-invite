@@ -79,6 +79,7 @@
       margin:0 0 8px;
       font-size: clamp(28px, 4vw, 44px);
       letter-spacing: -0.5px;
+      transition: opacity 0.4s ease;
     }
 
     .hero-img{
@@ -87,12 +88,18 @@
       box-shadow: 0 14px 30px rgba(0,0,0,0.12);
       margin: 10px auto 14px;
       display:block;
+      transition: opacity 0.4s ease;
     }
+
+    /* Fade helpers */
+    .fade-out{ opacity:0; }
+    .fade-in{ opacity:1; }
 
     p{
       margin:0 0 18px;
       font-size: clamp(16px, 2.3vw, 18px);
       opacity:0.9;
+      transition: opacity 0.4s ease;
     }
 
     /* Message under buttons */
@@ -149,22 +156,7 @@
       transform: translate(0,-50%);
     }
 
-    /* Success state (shown after YES) */
-    .success{
-      display:none;
-      margin-top: 16px;
-      padding: 14px 12px;
-      border-radius: 16px;
-      background: #fff;
-      border:1px solid #ffe0ea;
-    }
-    .success h2{ margin:0 0 6px; }
-    .success img{
-      width:min(320px, 85%);
-      border-radius: 16px;
-      box-shadow: 0 14px 30px rgba(0,0,0,0.12);
-      margin-top: 10px;
-    }
+
 
     /* Confetti canvas overlays the page */
     #confetti{
@@ -187,7 +179,7 @@
   <canvas id="confetti"></canvas>
 
   <div class="card">
-    <h1>Ievutė, will you be my Valentine? 💘</h1>
+    <h1>Ievute, will you be my Valentine? 💘</h1>
     <img class="hero-img" src="IMG_3349.jpeg" alt="Our photo 💕">
     <p>Choose wisely… the universe is watching 👀</p>
 
@@ -198,11 +190,7 @@
 
     <div class="hint" id="hint">Dear Ievutė, clicking “no” may cause the universe to glitch 💫</div>
 
-    <div class="success" id="successBox">
-      <h2>YAYYYY!! Date locked in 💞</h2>
-      <div>Screenshot this and send it to me as proof 😌</div>
-      <img id="cuteImg" alt="cute gif">
-    </div>
+
 
     <div class="footerNote">P.S. The “no” button tried its best. It failed. Spectacularly. 😇</div>
   </div>
@@ -210,7 +198,10 @@
   <script>
     // ===== 1) Put your GIF URL here =====
     const CUTE_GIF_URL = "IMG_1933.jpeg";
-    document.getElementById("cuteImg").src = CUTE_GIF_URL;
+
+    // Preload success image so it appears instantly
+    const preload = new Image();
+    preload.src = CUTE_GIF_URL;
 
     // ===== 2) Floating hearts in the background =====
     const heartColors = ["#ff2d73", "#ff4d88", "#ff6fa7", "#ff8fbf", "#ff3d6e"];
@@ -229,7 +220,6 @@
     const yesBtn = document.getElementById("yesBtn");
     const noBtn = document.getElementById("noBtn");
     const hint = document.getElementById("hint");
-    const successBox = document.getElementById("successBox");
 
     let dodgeCount = 0;
     const messages = [
@@ -319,10 +309,47 @@
     }, { passive:true });
 
     // ===== 4) YES click: show success + confetti =====
+    const heroImg = document.querySelector(".hero-img");
+    const heading = document.querySelector("h1");
+    const subtitle = document.querySelector("p");
+
+    let yesClicked = false;
     yesBtn.addEventListener("click", () => {
-      hint.textContent = "Correct answer detected ✅💘";
-      successBox.style.display = "block";
-      launchConfetti();
+      if (!yesClicked) {
+        // First tap: "Are you sure?" beat
+        yesClicked = true;
+        hint.textContent = "Are you sure? 😳";
+        yesBtn.textContent = "YES I'M SURE!! 💖";
+        yesBtn.style.transform = "scale(1.12)";
+        return;
+      }
+
+      // Second tap: reveal success with crossfade
+      yesBtn.disabled = true;
+
+      // Fade out current content
+      heading.classList.add("fade-out");
+      heroImg.classList.add("fade-out");
+      subtitle.style.opacity = "0";
+
+      // After fade-out, swap content and fade back in
+      setTimeout(() => {
+        heading.innerHTML = "YAYYYY!! Date locked in 💞";
+        heroImg.src = CUTE_GIF_URL;
+        heroImg.alt = "cute gif";
+        subtitle.innerHTML = "Screenshot this and send it to me as proof 😌";
+        subtitle.style.opacity = "";
+        hint.textContent = "Correct answer detected ✅💘";
+
+        heading.classList.remove("fade-out");
+        heroImg.classList.remove("fade-out");
+
+        // Hide buttons and footer
+        btnArea.style.display = "none";
+        document.querySelector(".footerNote").style.display = "none";
+
+        launchConfetti();
+      }, 420);
     });
 
     // ===== Simple confetti animation (canvas) =====
