@@ -128,16 +128,16 @@
     }
     #yesBtn:hover{ transform: translateY(-2px) scale(1.02); }
 
-    /* Tiny NO (the runner) */
+    /* NO button (the runner – stays inside the card) */
     #noBtn{
-      padding: 8px 14px;
-      font-size: 13px;
+      padding: 12px 22px;
+      font-size: 16px;
       color:white;
       background: var(--no);
       box-shadow: 0 10px 18px rgba(0,0,0,0.15);
       position:absolute;
       right: 22%;
-      top: 52%;
+      top: 50%;
       transform: translate(0,-50%);
     }
 
@@ -242,7 +242,10 @@
       yesBtn.style.transform = `scale(${scale})`;
     }
 
-    // Move NO to a random on-screen position (fully visible)
+    // Move NO to a random position inside the card
+    const card = document.querySelector(".card");
+    const btnArea = document.getElementById("btnArea");
+
     function moveNoButton() {
       dodgeCount++;
 
@@ -254,20 +257,20 @@
       const rot = (Math.random() * 30 - 15) * dodgeCount * 0.06;
       noBtn.style.transform = `translate(0,-50%) rotate(${rot}deg)`;
 
-      // Calculate safe on-screen position
-      const padding = 14;
-      const rect = noBtn.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+      // Calculate safe position within the card
+      const padding = 10;
+      const cardRect = card.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
 
-      const maxX = vw - rect.width - padding;
-      const maxY = vh - rect.height - padding;
+      const maxX = cardRect.width - btnRect.width - padding;
+      const maxY = cardRect.height - btnRect.height - padding;
 
       const x = clamp(Math.random() * maxX, padding, maxX);
       const y = clamp(Math.random() * maxY, padding, maxY);
 
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
+      // Position relative to the card (noBtn's offsetParent is .btnRow inside .card)
+      noBtn.style.left = (x - btnArea.offsetLeft) + "px";
+      noBtn.style.top = (y - btnArea.offsetTop) + "px";
       noBtn.style.right = "auto";
     }
 
@@ -373,8 +376,7 @@
       }
     }
 
-    // Start with NO already in a random spot (so it feels alive immediately)
-    moveNoButton();
+    // NO button starts visible in its natural position inside the card
   </script>
 </body>
 </html>
